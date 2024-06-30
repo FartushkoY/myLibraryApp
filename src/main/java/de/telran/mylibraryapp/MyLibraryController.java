@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/books")
 public class MyLibraryController {
 
     private List<Book> library;
@@ -24,7 +25,7 @@ public class MyLibraryController {
     }
 
 
-    @GetMapping("/home")
+    @GetMapping
     public String helloMessage() {
         return "Hello from my excellent website!";
     }
@@ -34,7 +35,7 @@ public class MyLibraryController {
         return library;
     }
 
-    @GetMapping("/all/{category}")
+    @GetMapping("/{category}")
     public List<Book> getAllByCategory(@PathVariable String category) {
         List<Book> result = library.stream().filter(b -> b.getCategory().equals(category)).toList();
         if (result.isEmpty()) {
@@ -87,13 +88,13 @@ public class MyLibraryController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/all")
+    @PostMapping
     public ResponseEntity<Book> addBook(@RequestBody Book book) {
         library.add(book);
         return new ResponseEntity<>(book, HttpStatus.CREATED);
     }
 
-    @PutMapping("/all")
+    @PutMapping
     public ResponseEntity<Book> updateBook(@RequestBody Book book) {
         if (library.contains(book)) {
             int index = library.indexOf(book);
@@ -105,7 +106,7 @@ public class MyLibraryController {
         }
     }
 
-    @PatchMapping("/all")
+    @PatchMapping
     public ResponseEntity<Book> updateAmountOfBooks(@RequestParam String isbn, @RequestParam Integer amount) {
         Optional<Book> book = library.stream().filter(b -> b.getIsbn().equals(isbn)).peek(b -> b.setAvailableAmount(amount)).findAny();
 
@@ -116,11 +117,22 @@ public class MyLibraryController {
         }
     }
 
-    @DeleteMapping("/all")
+    @DeleteMapping
     public ResponseEntity<?> deleteByIsbn(@RequestParam String isbn) {
         library.removeIf(b -> b.getIsbn().equals(isbn));
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
+
+//    вид запроса зависит только от логики, прописанной разработчиком, а не от типа указанного запроса
+    // пример некорректного запроса
+//    @DeleteMapping("/delete")
+//    public ResponseEntity<?> delete() {
+//        library.add(new Book("", "", "" ,0, ""));
+//        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+//    }
+
+
+
 
 
 }
